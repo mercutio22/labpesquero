@@ -1,0 +1,5 @@
+django
+south
+django-crispy-forms
+django-bootstrap-toolkit
+psycopg2

@@ -1,0 +1,50 @@
+import os
+from settings import *
+
+ADMINS = (
+    ('yourname', 'youremail')
+)
+
+#use only on dev environment, else False
+DEBUG=True
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'pontourbano',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+    
+    
+# Registration
+EMAIL_HOST_USER = 'noreply@pontourbano.net'
+EMAIL_HOST_PASSWORD = 'noreply01'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Middlewares without cache
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+)
+
+# Handles ETags based
+USE_ETAGS = False
+
+# Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+        'TIMEOUT': 300, # 5 minutes
+        'KEY_PREFIX': 'pontourbano_cache',
+    }
+}
