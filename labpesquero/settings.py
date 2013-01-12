@@ -1,4 +1,6 @@
 # Django settings for labpesquero project.
+import os
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -120,10 +122,11 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     #projectapps
+    'base',
     #third-party,
-    'south'
-    'bootstrap-toolkit',
-    'crispy-forms',
+    'south',
+    'bootstrap_toolkit',
+    'crispy_forms',
 )
 
 # Local deployment settings: there *must* be an unversioned
