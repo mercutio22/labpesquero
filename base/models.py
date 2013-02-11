@@ -13,7 +13,7 @@ class Endereco(models.Model):
             (1, _(u'residencial')),
         )
     tipo = models.PositiveIntegerField(choices=TIPO_CHOICES)
-    Rua = models.CharField(max_length=64)
+    logradouro = models.CharField(verbose_name=_(u'logradouro'), max_length=64)
     cep = models.CharField(max_length=13)
     pais = models.CharField(max_length=64)
     estado = models.CharField(max_length=2)
@@ -21,6 +21,9 @@ class Endereco(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey()
+
+    def __unicode__(self):
+        return '{}: {} - {}'.format(self.tipo, self.cidade, self.logradouro)
 
 class Pessoa(models.Model):
     nome = models.CharField(max_length=64)
@@ -33,10 +36,16 @@ class Pessoa(models.Model):
 class Medico(Pessoa):
     tratamento = models.CharField(max_length=16)
     crm = models.CharField(max_length=32, unique=True)
+    
+    def __unicode__(self):
+        return '{} {}'.format(self.tratamento, self.nome)
 
 
 class Paciente(Pessoa):
     sigla = models.CharField(max_length=32)
+
+    def __unicode__(self):
+        return 'Paciente {}: {}'.format(self.sigla, self.nome)
 
 class Amostra(models.Model):
 
@@ -52,6 +61,9 @@ class Amostra(models.Model):
     data_autorizacao = models.DateField()
     paciente = models.ForeignKey(Paciente)
 
+    def __unicode__(self):
+        return '{}: {}'.format(self.creim, self.tipo)
+
 class Laudo(models.Model):
     paciente = models.ForeignKey(Paciente)
     medico = models.ForeignKey(Medico)
@@ -62,15 +74,23 @@ class Laudo(models.Model):
     interpretacao = models.TextField()
     referencias = models.ManyToManyField(Publication)
 
+    def __unicode__(self):
+        return '{} - {}'.format(self.paciente, self.data)
 
 class Doenca(models.Model):
     nome = models.CharField(max_length='64')
     descricao = models.TextField()
     genes = models.ManyToManyField('Gene')
 
+    def __unicode__(self):
+        return str(self.nome)
+
 class Gene(models.Model):
     simbolo = models.CharField(max_length=128)
     description = models.TextField(max_length=765)
+    
+    def __unicode__(self):
+        return str(self.simbolo)
 
 class VarianteGenica(models.Model):
     VCHOICES = (
@@ -78,8 +98,14 @@ class VarianteGenica(models.Model):
         ('c', _(u'variante comum')),
         ('d', _(u'variante de efeito desconhecido')),
     )
-    codigo_nt = models.CharField(max_length=128)
-    codigo_prot = models.CharField(max_length=128)
+    codigo_nt = models.CharField(max_length=128, blank=True)
+    codigo_prot = models.CharField(max_length=128, blank=True)
     gene = models.ForeignKey(Gene)
     patogenicidade = models.CharField(max_length=4, choices=VCHOICES)
     referencias = models.ManyToManyField(Publication)
+
+    def __unicode__(self):
+        if self.codigo_nt: 
+            return str(self.codigo_nt)
+        else:
+            return str(self.codigo_prot)
