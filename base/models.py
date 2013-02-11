@@ -8,6 +8,11 @@ from publications.models.publication import Publication
 
 
 class Endereco(models.Model):
+    TIPO_CHOICES = ( 
+            (0, _(u'comercial')),
+            (1, _(u'residencial')),
+        )
+    tipo = models.PositiveIntegerField(choices=TIPO_CHOICES)
     Rua = models.CharField(max_length=64)
     cep = models.CharField(max_length=13)
     pais = models.CharField(max_length=64)
