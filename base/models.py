@@ -1,68 +1,74 @@
 #encoding=utf-8
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from publications.models.publication import Publication
 
-# Create your models here.
-class Medico(models.Model):
+class Pessoa(models.Model):
     nome = models.CharField(max_length=64)
-    tratamento = models.CharField(max_length=16)
+    endereco = models.ForeignKey('Endereco')
     email = models.EmailField(unique=True)
-    crm = models.Charfield(max_length=32, unique=True)
-    endereco = models.ForeignKey(Endereco)
+    class Meta:
+        abstract = True
 
+class Medico(Pessoa):
+    tratamento = models.CharField(max_length=16)
+    crm = models.CharField(max_length=32, unique=True)
 
 class Endereco(models.Model):
-    #Rua*
-    #cep*
-    #pais*
-    #estado*
-    #cidade*
-    pass
+    Rua = models.CharField(max_length=64)
+    cep = models.CharField(max_length=13)
+    pais = models.CharField(max_length=64)
+    estado = models.CharField(max_length=2)
+    cidade = models.CharField(max_length=64)
 
-class Paciente(models.Model):
-    #nome
-    #creim*
-    pass
+class Paciente(Pessoa):
+    sigla = models.CharField(max_length=32)
+
 class Amostra(models.Model):
-    #tipo
-    #data_recebimento
-    #data_autorizacao
-    pass
+
+    TIPO_CHOICES = (
+        ('ST', _('Sangue em tubo com EDTA')),
+        ('FTA', _('Sangue em FTA')),
+        ('SPF', _('Sangue em papel filtro')),
+        ('eDNA', _('DNA extraído')),
+    )
+    creim = models.PositiveIntegerField()
+    tipo = models.CharField(max_length=4, choices=TIPO_CHOICES)
+    data_recebimento = models.DateField()
+    data_autorizacao = models.DateField()
+    paciente = models.ForeignKey(Paciente)
 
 class Laudo(models.Model):
-    #paciente
-    #medico
-    #amostra
-    #data
-    #metodologia(texto)
+    paciente = models.ForeignKey(Paciente)
+    medico = models.ForeignKey(Medico)
+    amostra = models.ForeignKey(Amostra)
+    data = models.DateField()
+    metodologia = models.TextField()
     #resultado(lista de mutacoes) -->
-    #interpretacao(texto)
-    #referencias -->
-    pass
+    interpretacao = models.TextField()
+    referencias = models.ManyToManyField('Referencia')
 
-class Referencia(models.Model):
-    #Autores
-    #titulo
-    #link
-    #jornal
-    pass
+class Referencia(Publication):
+    class Meta:
+        proxy = True
 
 class Doenca(models.Model):
-    #nome
-    #descricao
-    #genes -->
-    pass
+    nome = models.CharField(max_length='64')
+    descricao = models.TextField()
+    genes = models.ManyToManyField('Gene')
 
-class Genes(models.Model):
-    #simbolo
-    #refseq
-    #cromossomo
-    pass
+class Gene(models.Model):
+    simbolo = models.CharField(max_length=128)
+    description = models.TextField(max_length=765)
 
-class VariantesGenicas(models.Model):
-    #codigo_nt
-    #codigo_prot
-    #gene -->
-    #localizacao
-    #patogenicidade(choicefield)
-    #referencias -->
-    pass
+class VarianteGenica(models.Model):
+    VCHOICES = (
+        ('p', _(u'variante patogênica')),
+        ('c', _(u'variante comum')),
+        ('d', _(u'variante de efeito desconhecido')),
+    )
+    codigo_nt = models.CharField(max_length=128)
+    codigo_prot = models.CharField(max_length=128)
+    gene = models.ForeignKey(Gene)
+    patogenicidade = models.CharField(max_length=4, choices=VCHOICES)
+    referencias = models.ManyToManyField(Referencia)

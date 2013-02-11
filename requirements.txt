@@ -3,3 +3,5 @@ south
 django-crispy-forms
 django-bootstrap-toolkit
 psycopg2
+reportlab
+django-xhtml2pdf

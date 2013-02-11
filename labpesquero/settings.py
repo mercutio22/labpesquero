@@ -127,6 +127,7 @@ INSTALLED_APPS = (
     'south',
     'bootstrap_toolkit',
     'crispy_forms',
+    'publications'
 )
 
 # Local deployment settings: there *must* be an unversioned
