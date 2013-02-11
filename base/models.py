@@ -1,18 +1,11 @@
 #encoding=utf-8
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
+
 from publications.models.publication import Publication
 
-class Pessoa(models.Model):
-    nome = models.CharField(max_length=64)
-    endereco = models.ForeignKey('Endereco')
-    email = models.EmailField(unique=True)
-    class Meta:
-        abstract = True
-
-class Medico(Pessoa):
-    tratamento = models.CharField(max_length=16)
-    crm = models.CharField(max_length=32, unique=True)
 
 class Endereco(models.Model):
     Rua = models.CharField(max_length=64)
@@ -20,6 +13,22 @@ class Endereco(models.Model):
     pais = models.CharField(max_length=64)
     estado = models.CharField(max_length=2)
     cidade = models.CharField(max_length=64)
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey()
+
+class Pessoa(models.Model):
+    nome = models.CharField(max_length=64)
+    email = models.EmailField(unique=True)
+    endereco = generic.GenericRelation(Endereco)
+
+    class Meta:
+        abstract = True
+
+class Medico(Pessoa):
+    tratamento = models.CharField(max_length=16)
+    crm = models.CharField(max_length=32, unique=True)
+
 
 class Paciente(Pessoa):
     sigla = models.CharField(max_length=32)
@@ -46,11 +55,8 @@ class Laudo(models.Model):
     metodologia = models.TextField()
     #resultado(lista de mutacoes) -->
     interpretacao = models.TextField()
-    referencias = models.ManyToManyField('Referencia')
+    referencias = models.ManyToManyField(Publication)
 
-class Referencia(Publication):
-    class Meta:
-        proxy = True
 
 class Doenca(models.Model):
     nome = models.CharField(max_length='64')
@@ -71,4 +77,4 @@ class VarianteGenica(models.Model):
     codigo_prot = models.CharField(max_length=128)
     gene = models.ForeignKey(Gene)
     patogenicidade = models.CharField(max_length=4, choices=VCHOICES)
-    referencias = models.ManyToManyField(Referencia)
+    referencias = models.ManyToManyField(Publication)
