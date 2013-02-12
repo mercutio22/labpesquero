@@ -1,4 +1,4 @@
-#encoding=utf-8
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -11,11 +11,11 @@ class Endereco(models.Model):
     TIPO_CHOICES = ( 
             (0, _(u'comercial')),
             (1, _(u'residencial')),
-        )
+    )
     tipo = models.PositiveIntegerField(choices=TIPO_CHOICES)
     logradouro = models.CharField(verbose_name=_(u'logradouro'), max_length=64)
     cep = models.CharField(max_length=13)
-    pais = models.CharField(max_length=64)
+    pais = models.CharField(max_length=64, verbose_name=_(u'país'))
     estado = models.CharField(max_length=2)
     cidade = models.CharField(max_length=64)
     content_type = models.ForeignKey(ContentType)
@@ -26,8 +26,8 @@ class Endereco(models.Model):
         return '{}: {} - {}'.format(self.tipo, self.cidade, self.logradouro)
 
 class Pessoa(models.Model):
-    nome = models.CharField(max_length=64)
-    email = models.EmailField(unique=True)
+    nome = models.CharField(max_length=64, blank=True)
+    email = models.EmailField(unique=True, blank=True)
     endereco = generic.GenericRelation(Endereco)
 
     class Meta:
@@ -35,7 +35,8 @@ class Pessoa(models.Model):
 
 class Medico(Pessoa):
     tratamento = models.CharField(max_length=16)
-    crm = models.CharField(max_length=32, unique=True)
+    crm = models.CharField(max_length=32, unique=True,
+            verbose_name=u'CRM')
     
     def __unicode__(self):
         return '{} {}'.format(self.tratamento, self.nome)
@@ -50,10 +51,10 @@ class Paciente(Pessoa):
 class Amostra(models.Model):
 
     TIPO_CHOICES = (
-        ('ST', _('Sangue em tubo com EDTA')),
-        ('FTA', _('Sangue em FTA')),
-        ('SPF', _('Sangue em papel filtro')),
-        ('eDNA', _('DNA extraído')),
+        ('ST', _(u'Sangue em tubo com EDTA')),
+        ('FTA', _(u'Sangue em FTA')),
+        ('SPF', _(u'Sangue em papel filtro')),
+        ('eDNA', _(u'DNA extraído')),
     )
     creim = models.PositiveIntegerField()
     tipo = models.CharField(max_length=4, choices=TIPO_CHOICES)
@@ -64,23 +65,30 @@ class Amostra(models.Model):
     def __unicode__(self):
         return '{}: {}'.format(self.creim, self.tipo)
 
+class Metodologia(models.Model):
+    sigla = models.CharField(max_length=32)
+    descricao = models.TextField(max_length=800)
+
 class Laudo(models.Model):
     paciente = models.ForeignKey(Paciente)
     medico = models.ForeignKey(Medico)
     amostra = models.ForeignKey(Amostra)
     data = models.DateField()
-    metodologia = models.TextField()
+    metodologia = models.ForeignKey(Metodologia)
     #resultado(lista de mutacoes) -->
     interpretacao = models.TextField()
-    referencias = models.ManyToManyField(Publication)
 
     def __unicode__(self):
         return '{} - {}'.format(self.paciente, self.data)
+
 
 class Doenca(models.Model):
     nome = models.CharField(max_length='64')
     descricao = models.TextField()
     genes = models.ManyToManyField('Gene')
+    
+    class Meta:
+        verbose_name = _(u'doença')
 
     def __unicode__(self):
         return str(self.nome)
@@ -103,6 +111,10 @@ class VarianteGenica(models.Model):
     gene = models.ForeignKey(Gene)
     patogenicidade = models.CharField(max_length=4, choices=VCHOICES)
     referencias = models.ManyToManyField(Publication)
+    
+    class Meta:
+        verbose_name = _(u'variante gênica')
+        verbose_name_plural = _(u'variantes gênicas')
 
     def __unicode__(self):
         if self.codigo_nt: 

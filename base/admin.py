@@ -10,14 +10,55 @@ from .models import (
             Amostra,
             Gene,
             VarianteGenica,
+            Laudo,
+            Doenca,
             )
+
+class DoencaAdmin(admin.ModelAdmin):
+    search_fields = ['nome', 'descricao',]
 
 class EnderecoAdminInline(GenericStackedInline):
     model = Endereco
     verbose_name = _(u'endereço')
     verbose_name_plural = _(u'endereços')
+    max_num = 2
 
 class MedicoAdmin(admin.ModelAdmin):
     inlines = (EnderecoAdminInline,)
+    search_fields = ['nome', 'crm']
+
+class PacienteAdmin(admin.ModelAdmin):
+    inlines = (EnderecoAdminInline,)
+    readonly_fields = ('id',)
+    search_fields = ['nome', 'id']
+
+class AmostraAdmin(admin.ModelAdmin):
+    raw_id_fields = ('paciente',)
+    search_fields = ['paciente__nome', 'creim', 'data_recebimento',]
+    list_display = ['paciente', 'creim'] 
+
+class GeneAdmin(admin.ModelAdmin):
+    search_fields = ['simbolo',]
+
+class VarianteGenicaAdmin(admin.ModelAdmin):
+    search_fields = ['codigo_nt', 'codigo_prot','gene__simbolo',
+        'patogenicidade',
+    ]
+    filter_horizontal = ['referencias',]
+
+class LaudoAdmin(admin.ModelAdmin):
+    search_fields = ['paciente__nome','medico__nome', 'metodologia', 
+        'interpretacao',
+    ]
+    raw_id_fields = ('paciente', 'medico', 'amostra')
+    list_display = ['paciente','medico', 'amostra', 'data']
+    list_display_links = ['paciente', 'data',]
+    list_filter = ('data',)
 
 admin.site.register(Medico, MedicoAdmin)
+admin.site.register(Paciente, PacienteAdmin)
+admin.site.register(Amostra, AmostraAdmin)
+admin.site.register(Gene, GeneAdmin)
+admin.site.register(VarianteGenica, VarianteGenicaAdmin)
+admin.site.register(Laudo, LaudoAdmin)
+
