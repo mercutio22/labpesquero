@@ -26,6 +26,7 @@ class Endereco(models.Model):
         return '{}: {} - {}'.format(self.tipo, self.cidade, self.logradouro)
 
 class Pessoa(models.Model):
+    """Classe abstrata com atributos comuns a Medico e Paciente """
     nome = models.CharField(max_length=64, blank=True)
     email = models.EmailField(unique=True, blank=True)
     endereco = generic.GenericRelation(Endereco)
@@ -34,19 +35,28 @@ class Pessoa(models.Model):
         abstract = True
 
 class Medico(Pessoa):
-    tratamento = models.CharField(max_length=16)
+    tratamento = models.CharField(max_length=16, blank=True)
     crm = models.CharField(max_length=32, unique=True,
-            verbose_name=u'CRM')
+            verbose_name=u'CRM', blank=True)
     
+    @staticmethod
+    def autocomplete_search_fields():
+        """ method required for grappelli autocomplete searches"""
+        return ("id__iexact", "nome__icontains",)
+
     def __unicode__(self):
         return '{} {}'.format(self.tratamento, self.nome)
 
 
 class Paciente(Pessoa):
-    sigla = models.CharField(max_length=32)
+    sigla = models.CharField(max_length=32, blank=True)
+
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("id__iexact", "nome__icontains",)
 
     def __unicode__(self):
-        return 'Paciente {}: {}'.format(self.sigla, self.nome)
+        return '{}: {}'.format(self.sigla, self.nome)
 
 class Amostra(models.Model):
 
@@ -62,6 +72,10 @@ class Amostra(models.Model):
     data_autorizacao = models.DateField()
     paciente = models.ForeignKey(Paciente)
 
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("id__iexact", "creim__icontains",)
+
     def __unicode__(self):
         return '{}: {}'.format(self.creim, self.tipo)
 
@@ -69,23 +83,13 @@ class Metodologia(models.Model):
     sigla = models.CharField(max_length=32)
     descricao = models.TextField(max_length=800)
 
-class Laudo(models.Model):
-    paciente = models.ForeignKey(Paciente)
-    medico = models.ForeignKey(Medico)
-    amostra = models.ForeignKey(Amostra)
-    data = models.DateField()
-    metodologia = models.ForeignKey(Metodologia)
-    #resultado(lista de mutacoes) -->
-    interpretacao = models.TextField()
-
     def __unicode__(self):
-        return '{} - {}'.format(self.paciente, self.data)
-
+        return str(self.sigla)
 
 class Doenca(models.Model):
     nome = models.CharField(max_length='64')
-    descricao = models.TextField()
-    genes = models.ManyToManyField('Gene')
+    descricao = models.TextField(blank=True)
+    genes = models.ManyToManyField('Gene', blank=True)
     
     class Meta:
         verbose_name = _(u'doença')
@@ -95,12 +99,18 @@ class Doenca(models.Model):
 
 class Gene(models.Model):
     simbolo = models.CharField(max_length=128)
-    description = models.TextField(max_length=765)
+    description = models.TextField(max_length=765, blank=True)
+    
+    @staticmethod
+    def autocomplete_search_fields(self):
+        return ('id__iexact', 'simbolo__icontains', 'description__icontains',)
     
     def __unicode__(self):
         return str(self.simbolo)
 
 class VarianteGenica(models.Model):
+    """Representa uma veriante descrita na literatura"""
+
     VCHOICES = (
         ('p', _(u'variante patogênica')),
         ('c', _(u'variante comum')),
@@ -108,16 +118,76 @@ class VarianteGenica(models.Model):
     )
     codigo_nt = models.CharField(max_length=128, blank=True)
     codigo_prot = models.CharField(max_length=128, blank=True)
-    gene = models.ForeignKey(Gene)
+    localizacao = models.CharField(max_length=32, 
+        help_text=_(u'contexo genômico, i.e. intron2, exon4, entre genes, etc')
+    )
+    gene = models.ForeignKey(Gene, blank=True, null=True)
     patogenicidade = models.CharField(max_length=4, choices=VCHOICES)
-    referencias = models.ManyToManyField(Publication)
-    
+    referencias = models.ManyToManyField(Publication, blank=True)
+    doenca = models.ManyToManyField(Doenca, blank=True)    
+
     class Meta:
         verbose_name = _(u'variante gênica')
         verbose_name_plural = _(u'variantes gênicas')
+
+    @staticmethod
+    def autocomplete_search_fields():
+        """ method required for grappelli autocomplete searches"""
+
+        return ("id__iexact", "codigo_nt__icontains",'codigo_prot__icontains')
 
     def __unicode__(self):
         if self.codigo_nt: 
             return str(self.codigo_nt)
         else:
             return str(self.codigo_prot)
+
+class VariantePaciente(models.Model):
+    """Essa classe representa uma variente gênica presente em um paciente 
+    específico.
+    """
+
+    ZIGOSIDADE_CHOICES = (
+        (0, _(u'em homozigose')),
+        (1, _(u'em hemizigose')),
+        (2, _(u'em heterozigose')),
+    )
+    zigosidade = models.PositiveIntegerField(choices=ZIGOSIDADE_CHOICES)
+    variante = models.ForeignKey(VarianteGenica)
+    paciente = models.ForeignKey(Paciente) 
+    
+    class Meta:
+        verbose_name = _(u'Variante do paciente')
+        verbose_name_plural = _(u'Variantes do paciente')
+    
+    def __unicode__(self):
+        if self.variante.codigo_nt:
+            return '{}: {} -> {}'.format(self.variante.codigo_nt, 
+                self.zigosidade, self.paciente.nome)
+        else:
+            return '{}: {} -> {}'.format(self.variante.codigo_prot, 
+                self.zigosidade, self.paciente.nome)
+
+class Laudo(models.Model):
+    """ Instâncias desta classe contém todas as informações necessárias
+     para gerar um laudo de um Paciente"""
+
+    TIPO_LAUDO = (
+        (1, _(u'triagem')),
+        (2, _(u'índice')),
+    )
+    tipo = models.PositiveIntegerField(choices=TIPO_LAUDO)
+    paciente = models.ForeignKey(Paciente)
+    medico = models.ForeignKey(Medico)
+    amostra = models.ForeignKey(Amostra)
+    data = models.DateField()
+    metodologia = models.ForeignKey(Metodologia)
+    interpretacao = models.TextField()
+    variantes = models.ManyToManyField(VariantePaciente)
+    obs = models.TextField(max_length=800, 
+        help_text=_(u'use este campo para informações adicionais')
+    ) 
+   
+    def __unicode__(self):
+        return '{} - {}'.format(self.paciente, self.data)
+

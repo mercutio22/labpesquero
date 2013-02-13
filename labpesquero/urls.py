@@ -8,6 +8,13 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'labpesquero.views.home', name='home'),
     url(r'^referencias', include('publications.urls')),
+    
+    #the grappelli admin skin
+    url(r'^grappelli/', include('grappelli.urls')),
+    
+    #the bibtex import view must precede the admin site url patterns
+    url(r'^admin/publications/publication/import_bibtex/$',
+        'publications.admin_views.import_bibtex'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

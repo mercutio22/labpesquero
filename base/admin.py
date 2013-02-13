@@ -12,10 +12,16 @@ from .models import (
             VarianteGenica,
             Laudo,
             Doenca,
+            Metodologia,
+            VariantePaciente
             )
 
 class DoencaAdmin(admin.ModelAdmin):
     search_fields = ['nome', 'descricao',]
+    autocomplete_lookup_fields = {
+        'fk': ['genes']
+    }
+    filter_horizontal = ('genes',)
 
 class EnderecoAdminInline(GenericStackedInline):
     model = Endereco
@@ -27,10 +33,17 @@ class MedicoAdmin(admin.ModelAdmin):
     inlines = (EnderecoAdminInline,)
     search_fields = ['nome', 'crm']
 
+class VariantePacienteInline(admin.StackedInline):
+    model = VariantePaciente
+    autocomplete_lookup_fields = {
+        'fk': ['variante', 'paciente'] 
+    }
+
 class PacienteAdmin(admin.ModelAdmin):
     inlines = (EnderecoAdminInline,)
     readonly_fields = ('id',)
     search_fields = ['nome', 'id']
+    inlines = (VariantePacienteInline,)
 
 class AmostraAdmin(admin.ModelAdmin):
     raw_id_fields = ('paciente',)
@@ -44,7 +57,9 @@ class VarianteGenicaAdmin(admin.ModelAdmin):
     search_fields = ['codigo_nt', 'codigo_prot','gene__simbolo',
         'patogenicidade',
     ]
+    raw_id_fields = ('gene',)
     filter_horizontal = ['referencias',]
+    autocomplete_lookup_fields = { 'fk': ['gene']}
 
 class LaudoAdmin(admin.ModelAdmin):
     search_fields = ['paciente__nome','medico__nome', 'metodologia', 
@@ -54,6 +69,14 @@ class LaudoAdmin(admin.ModelAdmin):
     list_display = ['paciente','medico', 'amostra', 'data']
     list_display_links = ['paciente', 'data',]
     list_filter = ('data',)
+    filter_horizontal = ('variantes',)
+    autocomplete_lookup_fields = {
+        'fk': ['paciente', 'medico', 'amostra'],
+    #    'm2m': ['variantes']
+    }
+
+class MetodologiaAdmin(admin.ModelAdmin):
+    search_fields=('sigla', 'descricao')
 
 admin.site.register(Medico, MedicoAdmin)
 admin.site.register(Paciente, PacienteAdmin)
@@ -61,4 +84,5 @@ admin.site.register(Amostra, AmostraAdmin)
 admin.site.register(Gene, GeneAdmin)
 admin.site.register(VarianteGenica, VarianteGenicaAdmin)
 admin.site.register(Laudo, LaudoAdmin)
-
+admin.site.register(Doenca, DoencaAdmin)
+admin.site.register(Metodologia, MetodologiaAdmin)

@@ -5,3 +5,4 @@ django-bootstrap-toolkit
 psycopg2
 reportlab
 django-xhtml2pdf
+django-grappelli #a jazzy skin for the django admin interface
