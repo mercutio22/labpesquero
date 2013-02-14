@@ -11,7 +11,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-GRAPPELLI_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
+#GRAPPELLI_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
 
 DATABASES = {
     'default': {
@@ -82,12 +82,16 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.request",
-    "django.core.context_processors.i18n",
-    'django.contrib.messages.context_processors.messages',
-)
+
+TEMPLATE_CONTEXT_PROCESSORS=(
+        "django.contrib.auth.context_processors.auth",
+        "django.core.context_processors.debug",
+        "django.core.context_processors.i18n",
+        "django.core.context_processors.media",
+        "django.core.context_processors.request",
+        #"django_pdf.context_processors.check_format", #<-- this line
+        'django.contrib.messages.context_processors.messages',
+    )
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -104,6 +108,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_pdf.middleware.PdfMiddleware',
 )
 
 ROOT_URLCONF = 'labpesquero.urls'
@@ -138,6 +143,9 @@ INSTALLED_APPS = (
     'bootstrap_toolkit',
     'crispy_forms',
     'publications',
+    'django.contrib.webdesign',
+    'wkhtmltopdf',
+    #'django_pdf',
 )
 
 # Local deployment settings: there *must* be an unversioned
