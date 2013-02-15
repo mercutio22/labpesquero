@@ -39,6 +39,9 @@ class VariantePacienteInline(admin.StackedInline):
         'fk': ['variante', 'paciente'] 
     }
 
+class VariantePacienteAdmin(admin.ModelAdmin):
+    model = VariantePaciente
+
 class PacienteAdmin(admin.ModelAdmin):
     inlines = (EnderecoAdminInline,)
     readonly_fields = ('id',)
@@ -86,3 +89,4 @@ admin.site.register(VarianteGenica, VarianteGenicaAdmin)
 admin.site.register(Laudo, LaudoAdmin)
 admin.site.register(Doenca, DoencaAdmin)
 admin.site.register(Metodologia, MetodologiaAdmin)
+admin.site.register(VariantePaciente, VariantePacienteAdmin)

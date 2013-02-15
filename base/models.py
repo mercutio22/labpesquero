@@ -3,9 +3,11 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from django.core.urlresolvers import reverse
 
 from publications.models.publication import Publication
 
+              
 
 class Endereco(models.Model):
     TIPO_CHOICES = ( 
@@ -116,7 +118,7 @@ class VarianteGenica(models.Model):
         ('c', _(u'variante comum')),
         ('d', _(u'variante de efeito desconhecido')),
     )
-    codigo_nt = models.CharField(max_length=128, blank=True)
+    codigo_nt = models.CharField(max_length=128, unique=True, blank=True)
     codigo_prot = models.CharField(max_length=128, blank=True)
     localizacao = models.CharField(max_length=32, 
         help_text=_(u'contexo genômico, i.e. intron2, exon4, entre genes, etc')
@@ -187,6 +189,10 @@ class Laudo(models.Model):
     obs = models.TextField(max_length=800, 
         help_text=_(u'use este campo para informações adicionais')
     ) 
+
+    def get_absolute_url(self):
+        """Faz aparecer o link 'mostrar no site' na interface admin"""
+        return reverse('laudo-detalhe', kwargs={ 'pk':str(self.id)})
    
     def __unicode__(self):
         return '{} - {}'.format(self.paciente, self.data)

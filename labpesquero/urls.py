@@ -5,7 +5,11 @@ from wkhtmltopdf.views import PDFTemplateView
 from django.contrib import admin
 admin.autodiscover()
 
-from django.views.generic import TemplateView
+from django.views.generic import (TemplateView,
+                                  )
+from base.models import Laudo
+from base.views import LaudoDetail
+from django.core.urlresolvers import reverse
 
 urlpatterns = patterns('',
     # Examples:
@@ -31,5 +35,7 @@ urlpatterns = patterns('',
     url(r'^laudopdf/$', 'base.views.createPDF', name='criaPDF'),
     url(r'^laudopdfwk/$',
         PDFTemplateView.as_view(template_name='base/report.html'),
-        name='webkitPDF')
+        name='webkitPDF'),
+    url(r'^laudo/(?P<pk>\d+)/$', LaudoDetail.as_view(),
+        name='laudo-detalhe'),
 )
