@@ -55,7 +55,7 @@ class Paciente(Pessoa):
 
     @staticmethod
     def autocomplete_search_fields():
-        return ("id__iexact", "nome__icontains",)
+        return ("id__iexact", "sigla__icontains", "nome__icontains",)
 
     def __unicode__(self):
         return '{}: {}'.format(self.sigla, self.nome)
@@ -75,11 +75,37 @@ class Amostra(models.Model):
     paciente = models.ForeignKey(Paciente)
 
     @staticmethod
-    def autocomplete_search_fields():
+    def autocomplete_search_fields(self):
         return ("id__iexact", "creim__icontains",)
 
     def __unicode__(self):
         return '{}: {}'.format(self.creim, self.tipo)
+
+class DosagemAEnzimatica(models.Model):
+    """Armazena dados de dosagem de atividade enzimática em doenças
+    """
+    
+    TIPO_DOSAGEM = (
+            ('leuco', _('leucócitos')),
+            ('gspf', _('gota de sangue em papel filtro (gspf)')),
+            )
+    tipo = models.CharField(max_length=10)
+    gene = models.ForeignKey('Gene')
+    valor = models.DecimalField(decimal_places=3, max_digits=6)
+    paciente = models.ForeignKey(Paciente)
+
+    @staticmethod
+    def autocomplete_search_fields(self):
+        return ('id__iexact', 
+            'gene_simbolo__icontains', 
+            'paciente_nome__icontains',
+            'paciente_sigla__icontains',
+        )
+
+    class Meta:
+        verbose_name = _(u'dosagem enzimática')
+        verbose_name_plural = _(u'dozagens enzimáticas')
+
 
 class Metodologia(models.Model):
     sigla = models.CharField(max_length=32)
@@ -189,6 +215,7 @@ class Laudo(models.Model):
     obs = models.TextField(max_length=800, 
         help_text=_(u'use este campo para informações adicionais')
     ) 
+    cobrado = models.BooleanField()
 
     def get_absolute_url(self):
         """Faz aparecer o link 'mostrar no site' na interface admin"""

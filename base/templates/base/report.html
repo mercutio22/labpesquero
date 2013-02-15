@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% load static %} 
+{% load webdesign %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="author" content="Hugo A. M. Torres">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>
+            Laudo | Laboratório de erros inatos do metabolismo
+        </title>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Ubuntu+Condensed' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" media="all" type="text/css" href="{% static "base/css/screen-12-12.css" %}">
+        <link rel="stylesheet" media="all" type="text/css" href="{% static "base/css/colorbox.css" %}">
+        <!--<link rel="stylesheet" media="print" type="text/css" href="{% static "base/css/print.css" %}">-->
+    </head>
+    <body>
+        <article>
+        <header class="creimheader">  
+            <h1 class="instituto">
+                <img class="logo" alt="logotipo do creim" src="{% static "base/img/creim.jpg" %}" align="left" />
+                <div class="alignright">
+                Laboratório de Erros Inatos do Metabolismo
+                </div>
+            </h1>
+            <div class="quiet alignright subtitulo">
+                <p>Centro de Referência em Erros Inatos do Metabolismo<p>
+            </div>
+        </header>
+        <hr>
+        
+        {{object.metodologia.descricao}} 
+        
+        <footer class='jb'>
+            <p> Rua Pedro de Toledo, 669, - 9&ordm andar, Vila Clementino - São Paulo - SP/Brasil </p>
+            <p> Departamento de Biofísica - UNIFESP Fone: 011-5576-4848 ramal 1314 </p>
+            <p> jbpesquero@unifesp.br <p>
+        </footer>
+        </article>
+    </body>
+<html>

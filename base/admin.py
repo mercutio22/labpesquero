@@ -13,8 +13,14 @@ from .models import (
             Laudo,
             Doenca,
             Metodologia,
-            VariantePaciente
+            VariantePaciente,
+            DosagemAEnzimatica,
             )
+
+class DosagemAEnzimaticaAdmin(admin.ModelAdmin):
+    model = DosagemAEnzimatica
+    raw_id_fields = ('gene', 'paciente')
+    autocomplete_lookup_fields = { 'fk': ['gene', 'paciente']}
 
 class DoencaAdmin(admin.ModelAdmin):
     search_fields = ['nome', 'descricao',]
@@ -46,7 +52,6 @@ class PacienteAdmin(admin.ModelAdmin):
     inlines = (EnderecoAdminInline,)
     readonly_fields = ('id',)
     search_fields = ['nome', 'id']
-    inlines = (VariantePacienteInline,)
 
 class AmostraAdmin(admin.ModelAdmin):
     raw_id_fields = ('paciente',)
@@ -69,7 +74,7 @@ class LaudoAdmin(admin.ModelAdmin):
         'interpretacao',
     ]
     raw_id_fields = ('paciente', 'medico', 'amostra')
-    list_display = ['paciente','medico', 'amostra', 'data']
+    list_display = ['paciente','medico', 'amostra', 'data', 'cobrado']
     list_display_links = ['paciente', 'data',]
     list_filter = ('data',)
     filter_horizontal = ('variantes',)
