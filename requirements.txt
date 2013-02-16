@@ -3,7 +3,4 @@ south
 django-crispy-forms
 django-bootstrap-toolkit
 psycopg2
-reportlab
-xhtml2pdf
-django-xhtml2pdf
 django-grappelli #a jazzy skin for the django admin interface
