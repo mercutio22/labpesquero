@@ -144,8 +144,8 @@ INSTALLED_APPS = (
     'crispy_forms',
     'publications',
     'django.contrib.webdesign',
-    'wkhtmltopdf',
     #'django_pdf',
+    'gunicorn',
 )
 
 # Local deployment settings: there *must* be an unversioned

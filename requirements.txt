@@ -4,3 +4,5 @@ django-crispy-forms
 django-bootstrap-toolkit
 psycopg2
 django-grappelli #a jazzy skin for the django admin interface
+#django-publications #not in pip yet
+gunicorn

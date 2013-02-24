@@ -1,5 +1,4 @@
 from django.conf.urls import patterns, include, url
-from wkhtmltopdf.views import PDFTemplateView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -32,10 +31,6 @@ urlpatterns = patterns('',
     url(r'^laudo/$', TemplateView.as_view(template_name='base/report.html'),
         name='laudo_detail'),
 
-    url(r'^laudopdf/$', 'base.views.createPDF', name='criaPDF'),
-    url(r'^laudopdfwk/$',
-        PDFTemplateView.as_view(template_name='base/report.html'),
-        name='webkitPDF'),
     url(r'^laudo/(?P<pk>\d+)/$', LaudoDetail.as_view(),
         name='laudo-detalhe'),
 )
