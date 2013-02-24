@@ -62,6 +62,7 @@ class GeneAdmin(admin.ModelAdmin):
     search_fields = ['simbolo',]
 
 class VarianteGenicaAdmin(admin.ModelAdmin):
+    list_display = ('codigo_nt', 'codigo_prot', 'gene','patogenicidade',)
     search_fields = ['codigo_nt', 'codigo_prot','gene__simbolo',
         'patogenicidade',
     ]
