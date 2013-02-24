@@ -62,13 +62,15 @@ class GeneAdmin(admin.ModelAdmin):
     search_fields = ['simbolo',]
 
 class VarianteGenicaAdmin(admin.ModelAdmin):
-    list_display = ('codigo_nt', 'codigo_prot', 'gene','patogenicidade',)
+    list_display = ('localizacao','codigo_nt', 'codigo_prot', 'gene',
+            'patogenicidade',)
     search_fields = ['codigo_nt', 'codigo_prot','gene__simbolo',
         'patogenicidade',
     ]
     raw_id_fields = ('gene',)
-    filter_horizontal = ['referencias',]
+    filter_horizontal = ['referencias','doenca']
     autocomplete_lookup_fields = { 'fk': ['gene']}
+    list_display_links = ['codigo_nt', 'codigo_prot']
 
 class LaudoAdmin(admin.ModelAdmin):
     search_fields = ['paciente__nome','medico__nome', 'metodologia', 
