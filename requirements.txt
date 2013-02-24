@@ -6,3 +6,4 @@ psycopg2
 django-grappelli #a jazzy skin for the django admin interface
 #django-publications #not in pip yet
 gunicorn
+#django-latex #not in pip yet git@github.com:ryszard/djangolatex.git

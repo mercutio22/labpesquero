@@ -146,6 +146,7 @@ INSTALLED_APPS = (
     'django.contrib.webdesign',
     #'django_pdf',
     'gunicorn',
+    'djangolatex',
 )
 
 # Local deployment settings: there *must* be an unversioned
