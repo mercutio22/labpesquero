@@ -15,11 +15,13 @@ class Endereco(models.Model):
             (1, _(u'residencial')),
     )
     tipo = models.PositiveIntegerField(choices=TIPO_CHOICES)
-    logradouro = models.CharField(verbose_name=_(u'logradouro'), max_length=64)
-    cep = models.CharField(max_length=13)
-    pais = models.CharField(max_length=64, verbose_name=_(u'país'))
-    estado = models.CharField(max_length=2)
-    cidade = models.CharField(max_length=64)
+    logradouro = models.CharField(verbose_name=_(u'logradouro'), blank=True, 
+        max_length=64)
+    cep = models.CharField(max_length=13, blank=True)
+    pais = models.CharField(max_length=64, verbose_name=_(u'país'),
+        blank=True)
+    estado = models.CharField(max_length=2, blank=True)
+    cidade = models.CharField(max_length=64, blank=True)
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey()
@@ -30,8 +32,8 @@ class Endereco(models.Model):
 class Pessoa(models.Model):
     """Classe abstrata com atributos comuns a Medico e Paciente """
     nome = models.CharField(max_length=64, blank=True)
-    email = models.EmailField(unique=True, blank=True)
-    endereco = generic.GenericRelation(Endereco)
+    email = models.EmailField(unique=True, blank=True, null=True)
+    endereco = generic.GenericRelation(Endereco, blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -58,7 +60,7 @@ class Paciente(Pessoa):
         return ("id__iexact", "sigla__icontains", "nome__icontains",)
 
     def __unicode__(self):
-        return '{}: {}'.format(self.sigla, self.nome)
+        return self.nome or self.sigla
 
 class Amostra(models.Model):
 
