@@ -32,7 +32,7 @@ class Endereco(models.Model):
 class Pessoa(models.Model):
     """Classe abstrata com atributos comuns a Medico e Paciente """
     nome = models.CharField(max_length=64, blank=True)
-    email = models.EmailField(unique=True, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
     endereco = generic.GenericRelation(Endereco, blank=True, null=True)
 
     class Meta:
