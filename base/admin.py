@@ -24,9 +24,10 @@ class DosagemAEnzimaticaAdmin(admin.ModelAdmin):
 
 class DoencaAdmin(admin.ModelAdmin):
     search_fields = ['nome', 'descricao',]
-    autocomplete_lookup_fields = {
-        'fk': ['genes']
-    }
+    #raw_id_fields = ('genes',)
+    #autocomplete_lookup_fields = {
+    #    'm2m': ['genes'],
+    #}
     filter_horizontal = ('genes',)
 
 class EnderecoAdminInline(GenericStackedInline):

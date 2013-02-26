@@ -120,23 +120,26 @@ class Doenca(models.Model):
     nome = models.CharField(max_length='64')
     descricao = models.TextField(blank=True)
     genes = models.ManyToManyField('Gene', blank=True)
+    omim = models.CharField(u'OMIM', max_length=64, blank=True)
     
     class Meta:
         verbose_name = _(u'doença')
 
     def __unicode__(self):
-        return str(self.nome)
+        return unicode(self.nome)
 
 class Gene(models.Model):
     simbolo = models.CharField(max_length=128)
     description = models.TextField(max_length=765, blank=True)
+    refseq = models.CharField(u'RefSeq', max_length=64, blank=True)
+    omim = models.CharField(u'OMIM', max_length=64, blank=True)
     
     @staticmethod
     def autocomplete_search_fields(self):
         return ('id__iexact', 'simbolo__icontains', 'description__icontains',)
     
     def __unicode__(self):
-        return str(self.simbolo)
+        return unicode(self.simbolo)
 
 class VarianteGenica(models.Model):
     """Representa uma veriante descrita na literatura"""
