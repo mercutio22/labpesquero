@@ -149,7 +149,7 @@ class VarianteGenica(models.Model):
         ('c', _(u'variante comum')),
         ('d', _(u'variante de efeito desconhecido')),
     )
-    codigo_nt = models.CharField(max_length=128, unique=True, blank=True)
+    codigo_nt = models.CharField(max_length=128, blank=True)
     codigo_prot = models.CharField(max_length=128, blank=True)
     localizacao = models.CharField(max_length=32, 
         help_text=_(u'contexo genômico, i.e. intron2, exon4, entre genes, etc')
@@ -162,6 +162,7 @@ class VarianteGenica(models.Model):
     class Meta:
         verbose_name = _(u'variante gênica')
         verbose_name_plural = _(u'variantes gênicas')
+        unique_together = (('codigo_nt', 'gene'),('codigo_prot', 'gene'),)
 
     @staticmethod
     def autocomplete_search_fields():
@@ -171,9 +172,9 @@ class VarianteGenica(models.Model):
 
     def __unicode__(self):
         if self.codigo_nt: 
-            return str(self.codigo_nt)
+            return '{} gene {}'.format(self.codigo_nt, self.gene)
         else:
-            return str(self.codigo_prot)
+            return '{} gene {}'.format(self.codigo_prot, self.gene)
 
 class VariantePaciente(models.Model):
     """Essa classe representa uma variente gênica presente em um paciente 
@@ -195,11 +196,15 @@ class VariantePaciente(models.Model):
     
     def __unicode__(self):
         if self.variante.codigo_nt:
-            return '{}: {} -> {}'.format(self.variante.codigo_nt, 
-                self.zigosidade, self.paciente.nome)
+            return '{} gene: {} paciente: {}'.format(
+                    self.variante.codigo_nt,
+                    self.variante.gene,
+                    self.paciente)
         else:
-            return '{}: {} -> {}'.format(self.variante.codigo_prot, 
-                self.zigosidade, self.paciente.nome)
+            return '{} gene: {} paciente: {}'.format(
+                    self.variante.codigo_prot,
+                    self.variate.gene,
+                    self.paciente)
 
 class Laudo(models.Model):
     """ Instâncias desta classe contém todas as informações necessárias

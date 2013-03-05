@@ -48,6 +48,12 @@ class VariantePacienteInline(admin.StackedInline):
 
 class VariantePacienteAdmin(admin.ModelAdmin):
     model = VariantePaciente
+    search_fields = [
+            'codigo_nt', 
+            'codigo_prot', 
+            'paciente__nome', 
+            'paciente__sigla']
+    list_display = ['variante', 'paciente', 'zigosidade']
 
 class PacienteAdmin(admin.ModelAdmin):
     inlines = (EnderecoAdminInline,)
